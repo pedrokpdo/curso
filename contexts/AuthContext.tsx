@@ -1,12 +1,13 @@
 import { createContext, ReactNode, useState } from "react";
+import { setCookie } from 'nookies'
 import { api } from "../services/api";
 import Router from 'next/router'
 
 type User = {
     email: string;
-    permissions: string [];
+    permissions: string[];
     roles: string[]
-;
+    ;
 }
 
 type SignInCredentials = {
@@ -24,38 +25,47 @@ type AuthProviderProps = {
     children: ReactNode;
 }
 
-export const AuthContext = createContext ({} as AuthContextData)
+export const AuthContext = createContext({} as AuthContextData)
 
-export function AuthProvider ({ children }: AuthProviderProps) {
+export function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User>()
     const isAuthenticated = !!user;
 
-    async function signIn ({email, password}: SignInCredentials) {
-     try {
-        const response = await api.post('sessions', {
-            email,
-            password,
-               
-           })
+    async function signIn({ email, password }: SignInCredentials) {
+        try {
+            const response = await api.post('sessions', {
+                email,
+                password,
 
-           const { token, refreshToken, permissions, roles } = response.data
-           
-           setUser({
-               email,
-               permissions,
-               roles,
-           })
+            })
+
+            const { token, refreshToken, permissions, roles } = response.data
+
+            setCookie(undefined, 'nextauth.token', token, {
+                maxAge: 60 * 60 * 24 * 30, // 30 days
+                path: '/',
+            }) 
+            setCookie(undefined, 'nextauth.refreshToken', refreshToken, {
+                maxAge: 60 * 60 * 24 * 30, // 30 days
+                path: '/',
+            }) 
+
+            setUser({
+                email,
+                permissions,
+                roles,
+            })
 
             console.log(response.data);
             Router.push('/dashboard')
-        }catch (err) {
+        } catch (err) {
             console.log(err);
-            
+
         }
-     }
+    }
 
     return (
-        <AuthContext.Provider value={{signIn, isAuthenticated, user}}>
+        <AuthContext.Provider value={{ signIn, isAuthenticated, user }}>
             {children}
         </AuthContext.Provider>
     )
