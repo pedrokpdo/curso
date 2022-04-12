@@ -9,7 +9,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         api.get('/me')
-        .then(response => console.log(response))
+            .then(response => console.log(response))
     }, [])
 
     return (
@@ -20,6 +20,7 @@ export default function Dashboard() {
 export const getServerSideProps = withSSRAuth(async (ctx) => {
     const apiClient = setupAPIClient(ctx)
     const response = await apiClient.get('/me')
+     
     return {
         props: {}
     }
