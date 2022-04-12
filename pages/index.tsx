@@ -1,44 +1,36 @@
-import { GetServerSideProps } from 'next'
-import { parseCookies } from 'nookies'
-import { FormEvent, useContext, useState } from 'react'
-import { AuthContext } from '../contexts/AuthContext'
-import styles from '../styles/Home.module.css'
-import { withSSRGuest } from '../utils/withSSRGuest'
+import styles from '../styles/Home.module.css';
+import { AuthContext } from '../contexts/AuthContext';
+import { withSSRGuest } from '../utils/withSSRGuest';
+import { FormEvent, useState, useContext } from 'react';
 
-export default function Home () {
-  const [email, setSemail] = useState('')
-  const [password, setPassword] = useState('')
+export default function Home() {
+  const [ email, setEmail ] = useState('');
+  const [ password, setPassword ] = useState('');
 
-  const {signIn} = useContext (AuthContext)
+  const { signIn } = useContext(AuthContext);
 
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
 
-
-  async function handleSubmit (event: FormEvent) {
-    event.preventDefault()
     const data = {
       email,
-      password,
+      password
     }
 
-    await signIn(data)
-    
+    await signIn(data);
   }
 
   return (
     <form onSubmit={handleSubmit} className={styles.container}>
-      <h1>hello word</h1>
-      <input type="email" value={email} onChange={e => setSemail(e.target.value)}/>
-      <input type="password" value={password} onChange={e => setPassword(e.target.value)}/>
-      <button type='submit'>Entrar</button>
+      <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
+      <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+      <button type="submit">Enviar</button>
     </form>
   )
 }
 
 export const getServerSideProps = withSSRGuest(async (ctx) => {
   return {
-    props: {
-      
-    } 
+    props:  {}
   }
-})
-
+});
